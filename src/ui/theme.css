@@ -1,0 +1,264 @@
+/* Tokens. Text pairs checked at ≥ 4.5:1: --text, --text-dim, --ichor, --candle, --blood on --night and --stone. */
+:root {
+  --night: #0a0e19;
+  --night-2: #121a2b;
+  --stone: #2a3142;
+  --stone-light: #3a4357;
+  --stone-edge: #4c566d;
+  --fog: rgba(170, 190, 220, 0.09);
+  --hill: #0d1322;
+  --hill-front: #070a12;
+  --text: #e8ecf4;
+  --text-dim: #aab4c8;
+  --ichor: #8fe36b;
+  --ichor-glow: rgba(143, 227, 107, 0.45);
+  --candle: #ffb547;
+  --blood: #ff7a7a;
+  --blood-glow: rgba(255, 70, 70, 0.6);
+  --ghost: rgba(220, 230, 255, 0.55);
+  --focus: #ffe28a;
+  --radius: 14px;
+  --display: "Creepster", Georgia, serif;
+  --body: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Bengali", sans-serif;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; }
+
+body {
+  background: radial-gradient(ellipse at 70% -10%, #1c2742 0%, var(--night) 55%) fixed, var(--night);
+  color: var(--text);
+  font-family: var(--body);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.num { font-variant-numeric: tabular-nums; }
+
+a { color: var(--ichor); }
+
+button, select, input { font: inherit; color: inherit; }
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* ---------- atmosphere ---------- */
+.atmosphere { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.moon {
+  position: absolute; top: 6vh; right: 8vw; width: 110px; height: 110px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, #fffbe6 0%, #f1e6bf 55%, #cfc29a 100%);
+  box-shadow: 0 0 60px 20px rgba(255, 245, 210, 0.18), 0 0 160px 60px rgba(255, 245, 210, 0.06);
+}
+.fog {
+  position: absolute; left: -50%; width: 200%; height: 45vh; bottom: 0;
+  background:
+    radial-gradient(ellipse 30% 40% at 20% 70%, var(--fog), transparent 70%),
+    radial-gradient(ellipse 25% 35% at 55% 80%, var(--fog), transparent 70%),
+    radial-gradient(ellipse 35% 45% at 85% 75%, var(--fog), transparent 70%);
+}
+.fog-back { animation: drift 60s linear infinite; opacity: 0.8; }
+.fog-front { animation: drift 38s linear infinite reverse; bottom: -8vh; }
+.skyline { position: absolute; bottom: 0; left: 0; width: 100%; height: 140px; }
+@keyframes drift { from { transform: translateX(0); } to { transform: translateX(25%); } }
+
+/* ---------- layout ---------- */
+.app { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 24px 16px 180px; }
+
+.brand { font-family: var(--display); letter-spacing: 0.04em; color: var(--ichor); text-shadow: 0 0 18px var(--ichor-glow); font-weight: 400; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 10px 18px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--stone-edge); background: var(--stone); color: var(--text);
+  transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.btn:hover { background: var(--stone-light); }
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--ichor); border-color: var(--ichor); color: #0b1a06; font-weight: 700; box-shadow: 0 0 24px var(--ichor-glow); }
+.btn-primary:hover { background: #a6f085; }
+.btn-kill { background: #8a1f1f; border-color: var(--blood); color: #fff; font-weight: 700; }
+.btn-kill:hover { background: #a82a2a; }
+.btn-ghost { background: transparent; }
+.btn-small { min-height: 36px; padding: 6px 12px; font-size: 0.9rem; }
+.link-btn { background: none; border: 0; padding: 0; color: var(--ichor); text-decoration: underline; cursor: pointer; }
+
+/* ---------- landing ---------- */
+.landing { display: grid; gap: 32px; padding-top: 6vh; max-width: 760px; }
+.landing h1 { font-size: clamp(3rem, 10vw, 5.5rem); line-height: 1; margin: 0; }
+.tagline { font-size: clamp(1.15rem, 3vw, 1.45rem); margin: 0; color: var(--text); max-width: 34ch; }
+.dropzone {
+  display: grid; gap: 10px; justify-items: start; padding: 28px; border-radius: var(--radius);
+  border: 2px dashed var(--stone-edge); background: rgba(18, 26, 43, 0.75); cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.dropzone[data-over="true"], .dropzone:hover { border-color: var(--ichor); background: rgba(30, 44, 30, 0.6); }
+.dropzone strong { font-size: 1.2rem; }
+.dropzone .privacy { color: var(--ichor); display: flex; gap: 8px; align-items: center; }
+.landing-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; padding: 0; margin: 0; list-style: none; }
+.steps li { background: rgba(18, 26, 43, 0.75); border: 1px solid var(--stone); border-radius: var(--radius); padding: 16px; }
+.steps b { display: block; color: var(--candle); }
+.error { color: var(--blood); }
+
+/* ---------- graveyard header ---------- */
+.topbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 20px; }
+.topbar .brand { font-size: 2rem; margin: 0; }
+.tally { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 12px; }
+.tally-box { border-radius: var(--radius); padding: 18px 20px; background: var(--night-2); border: 1px solid var(--stone); }
+.tally-box .label { color: var(--text-dim); font-size: 0.95rem; }
+.tally-box .value { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 800; line-height: 1.1; }
+.tally-feeding .value { color: var(--blood); text-shadow: 0 0 18px rgba(255, 80, 80, 0.35); }
+.tally-saved .value { color: var(--ichor); text-shadow: 0 0 18px var(--ichor-glow); }
+.statement-line { color: var(--text-dim); margin: 0 0 24px; font-size: 0.95rem; }
+
+.section-title { font-size: 1.25rem; margin: 36px 0 12px; display: flex; align-items: baseline; gap: 10px; }
+.section-title small { color: var(--text-dim); font-weight: 400; font-size: 0.95rem; }
+
+/* ---------- zombie field ---------- */
+.field { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px 20px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); align-items: end; }
+.grave { --weight: 0.5; position: relative; display: flex; justify-content: center; padding-top: 22px; }
+.grave::after {
+  /* the mound of earth the tombstone rises from */
+  content: ""; position: absolute; bottom: -10px; left: 8%; right: 8%; height: 22px; border-radius: 50%;
+  background: radial-gradient(ellipse at center, #2b2218 0%, #1a140e 60%, transparent 72%);
+  z-index: -1;
+}
+.zombie {
+  position: relative; width: calc(76% + 24% * var(--weight)); min-height: calc(190px + 70px * var(--weight));
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; text-align: center;
+  padding: 44px 14px 18px; cursor: pointer; color: var(--text);
+  border: 1px solid var(--stone-edge); border-bottom: 0;
+  border-radius: 48% 48% 10px 10px / 34% 34% 10px 10px;
+  background: linear-gradient(175deg, var(--stone-light), var(--stone) 60%, #232938);
+  box-shadow: 0 0 calc(6px + 26px * var(--weight)) rgba(143, 227, 107, calc(0.08 + 0.3 * var(--weight))), inset 0 2px 0 rgba(255, 255, 255, 0.05);
+  animation: rise 0.9s cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.zombie:hover { transform: translateY(-4px); box-shadow: 0 0 calc(14px + 30px * var(--weight)) var(--ichor-glow); }
+.zombie[data-hike="true"] { box-shadow: 0 0 calc(10px + 26px * var(--weight)) rgba(255, 60, 60, calc(0.2 + 0.3 * var(--weight))); }
+@keyframes rise { from { transform: translateY(60px); opacity: 0; clip-path: inset(0 0 100% 0); } to { transform: none; opacity: 1; clip-path: inset(0 0 0 0); } }
+
+.eyes { position: absolute; top: 18px; display: flex; gap: 14px; }
+.eyes i {
+  width: 12px; height: 7px; border-radius: 50% 50% 45% 45%; background: var(--ichor);
+  box-shadow: 0 0 10px 3px var(--ichor-glow); animation: blink 6s infinite;
+}
+.zombie[data-hike="true"] .eyes i { background: #ff4d4d; box-shadow: 0 0 12px 5px var(--blood-glow); }
+@keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+
+.cracks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.cracks path { stroke: rgba(10, 12, 20, 0.75); stroke-width: 2; fill: none; stroke-linecap: round; }
+
+.tomb-name, .tomb-yearly, .tomb-meta, .badge-hike { position: relative; z-index: 1; }
+.tomb-name { font-weight: 700; font-size: calc(1rem + 0.2rem * var(--weight)); line-height: 1.2; }
+.tomb-yearly { font-size: calc(1.35rem + 0.7rem * var(--weight)); font-weight: 800; color: var(--blood); }
+.tomb-meta { color: var(--text-dim); font-size: 0.88rem; }
+.badge { display: inline-block; border-radius: 999px; padding: 2px 10px; font-size: 0.8rem; font-weight: 700; }
+.badge-hike { background: rgba(255, 90, 90, 0.16); color: var(--blood); }
+.badge-back { background: var(--blood); color: #1a0505; position: absolute; top: -12px; }
+
+/* ---------- spared ghosts & buried ---------- */
+.row { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 14px; }
+.ghost {
+  display: flex; flex-direction: column; align-items: center; min-width: 150px; padding: 14px 16px 18px; cursor: pointer;
+  border: 1px solid rgba(220, 230, 255, 0.35); background: rgba(220, 230, 255, 0.08); color: var(--text);
+  border-radius: 50% 50% 12px 12px / 40% 40% 12px 12px; opacity: 0.85;
+  animation: float 5s ease-in-out infinite;
+}
+.ghost .tomb-yearly { color: var(--text); font-size: 1.05rem; }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+.buried {
+  display: flex; flex-direction: column; align-items: center; min-width: 150px; padding: 12px 16px; cursor: pointer;
+  border: 1px solid var(--stone-edge); border-radius: 10px; background: #1b202c; color: var(--text);
+  animation: sink 0.8s ease-out both;
+}
+.buried .rip { font-family: var(--display); color: var(--text-dim); font-size: 1.2rem; letter-spacing: 0.15em; }
+.buried .tomb-yearly { color: var(--ichor); font-size: 1.05rem; }
+@keyframes sink { from { transform: translateY(-30px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+details.more { margin-top: 28px; border-top: 1px solid var(--stone); padding-top: 8px; }
+details.more summary { cursor: pointer; font-size: 1.1rem; padding: 10px 0; }
+details.more summary small { color: var(--text-dim); }
+.plain-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.plain-list button {
+  width: 100%; display: flex; justify-content: space-between; gap: 12px; padding: 12px 14px; cursor: pointer; text-align: left;
+  border: 1px solid var(--stone); border-radius: 10px; background: rgba(18, 26, 43, 0.85); color: var(--text);
+}
+.plain-list .dim { color: var(--text-dim); }
+
+.empty { padding: 28px; border: 1px dashed var(--stone-edge); border-radius: var(--radius); color: var(--text-dim); text-align: center; }
+
+/* ---------- dialogs ---------- */
+dialog {
+  color: var(--text); background: var(--night-2); border: 1px solid var(--stone-edge); border-radius: var(--radius);
+  padding: 0; width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 32px);
+}
+dialog::backdrop { background: rgba(3, 5, 10, 0.72); backdrop-filter: blur(2px); }
+.dialog-body { padding: 24px; display: grid; gap: 16px; }
+.dialog-body h2 { margin: 0; }
+.dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
+dialog.sheet {
+  margin: 0 0 0 auto; height: 100vh; max-height: 100vh; width: min(480px, 100vw);
+  border-radius: var(--radius) 0 0 var(--radius); border-right: 0; overflow-y: auto;
+  animation: slide 0.25s ease-out;
+}
+@keyframes slide { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+.sheet-close { position: absolute; top: 12px; right: 12px; }
+.sheet .lede { font-size: 1.1rem; margin: 0; }
+.facts { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 0; }
+.facts dt { color: var(--text-dim); }
+.facts dd { margin: 0; text-align: right; }
+.math { background: rgba(143, 227, 107, 0.08); border: 1px solid rgba(143, 227, 107, 0.3); border-radius: 10px; padding: 10px 12px; }
+.warn { background: rgba(255, 90, 90, 0.12); border: 1px solid rgba(255, 122, 122, 0.4); border-radius: 10px; padding: 10px 12px; }
+.timeline { width: 100%; height: auto; display: block; }
+.timeline .bar { fill: var(--ichor); }
+.timeline .bar.after { fill: var(--blood); }
+.timeline .axis { fill: var(--text-dim); font-size: 10px; }
+.field-row { display: grid; gap: 6px; }
+.field-row label, .field-row legend { font-weight: 600; }
+.field-row select { width: 100%; min-height: 44px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--stone-edge); background: var(--stone); }
+fieldset { border: 1px solid var(--stone); border-radius: 10px; padding: 12px; margin: 0; display: grid; gap: 10px; }
+.radio { display: flex; gap: 8px; align-items: center; }
+.hint { color: var(--text-dim); font-size: 0.9rem; margin: 0; }
+
+/* ---------- toast & footer ---------- */
+.toast {
+  position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 20;
+  width: min(560px, calc(100vw - 32px)); padding: 14px 16px; border-radius: var(--radius);
+  background: #101827; border: 1px solid var(--ichor); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  display: grid; gap: 8px; animation: sink 0.3s ease-out;
+}
+.toast-row { display: flex; gap: 12px; justify-content: space-between; align-items: center; }
+.toast .tips { margin: 0; padding-left: 18px; color: var(--text-dim); font-size: 0.92rem; }
+
+.footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--stone); display: flex; flex-wrap: wrap; gap: 14px 20px; align-items: center; }
+.footer label { display: inline-flex; gap: 8px; align-items: center; }
+.footer select { min-height: 40px; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--stone-edge); background: var(--stone); }
+.footer input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--ichor); }
+
+@media (max-width: 560px) {
+  .field { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 24px 12px; }
+  .zombie { width: 100%; min-height: calc(170px + 50px * var(--weight)); padding: 40px 10px 14px; }
+  .tomb-yearly { font-size: calc(1.15rem + 0.5rem * var(--weight)); }
+  .moon { width: 56px; height: 56px; top: 10px; right: 12px; }
+  .topbar .brand { font-size: 1.5rem; }
+  dialog.sheet { border-radius: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

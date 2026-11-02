@@ -12,7 +12,7 @@ const noNetworkCsp: Plugin = {
       tag: "meta",
       attrs: {
         "http-equiv": "Content-Security-Policy",
-        content: "default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'none'",
+        content: "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'",
       },
       injectTo: "head-prepend",
     },

@@ -6,7 +6,7 @@ Upload a bank statement CSV and Zombie Subscriptions finds every recurring charg
 
 **Everything runs in your browser. Your statement never leaves your device.**
 
-- **Live app:** _TODO: GitHub Pages URL_
+- **Live app:** https://rehan0087.github.io/zombie-subscriptions/
 - **Demo video:** _TODO: YouTube URL_
 - **Kiroween 2026 category:** Costume Contest
 
@@ -20,7 +20,15 @@ npm run dev
 ```
 
 ```bash
-npm test
+npx vitest run
+```
+
+The test suite has unit tests and fast-check property tests for every correctness property in the detection design (P1–P11), for example "shuffling the statement never changes the result" and "savings always equal the sum of what you killed".
+
+The sample statement is invented and reproducible:
+
+```bash
+node scripts/make-sample.mjs
 ```
 
 ## Features
@@ -29,7 +37,9 @@ npm test
 - Detection of weekly, monthly, quarterly and yearly charges that tolerates late payments, price changes and two plans on one service.
 - Yearly cost, total paid, price hike alerts and dormant-series detection, each with "how we computed this".
 - Kill / spare / undo, savings tally, and verdicts that carry over to next month's statement. Killed subscriptions that charge again come back with a warning.
-- Spooky design that encodes data: card size = yearly cost, grave cracks = months charging, red eyes = price hike.
+- Spooky design that encodes data: tombstone size and glow = yearly cost, grave cracks = months charging, red eyes = price hike, ghosts = spared, R.I.P. stones = killed.
+- Export a "cancel these" checklist as CSV.
+- Strict privacy: no backend, and the production build ships a Content-Security-Policy with `connect-src 'none'`, so the page cannot send your data anywhere.
 - Reduced-motion support, keyboard access, WCAG AA contrast, and sound that is off by default and synthesized in the browser.
 
 ## How Kiro was used

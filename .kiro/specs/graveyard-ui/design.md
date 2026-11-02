@@ -43,5 +43,10 @@
 ## Sound
 `ui/effects/sound.ts` synthesizes three short effects with Web Audio oscillators and noise: shovel (kill), wind (spare), groan (open a zombie with a price hike). Off by default.
 
+## Build notes
+- The mapping dialog re-checks the chosen columns as the user picks them, so the day/month question appears in the same step instead of a second dialog.
+- The production build adds a Content-Security-Policy with `connect-src 'none'`, so the page cannot send data anywhere even if a dependency tried to.
+- "Still feeding" excludes Maybe zombies (detection requirement 5.7).
+
 ## Sample data
 `src/sample/haunted-statement.csv` – an invented 14-month statement with ~12 recurring charges (streaming, music, cloud storage, gym, mobile data pack, a news app with a price hike, a yearly domain renewal, two plans on one service, one cancelled-and-dormant app) plus ~300 one-off purchases and salary credits. Merchant names are invented so no real brand appears in the demo video.
