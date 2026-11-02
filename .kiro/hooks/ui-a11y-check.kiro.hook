@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Accessibility and meaning check",
+  "description": "Reviews UI components for keyboard access, labels, reduced motion and decoration that carries no data.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["src/ui/**/*.tsx", "src/ui/**/*.css"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Review the changed UI file against .kiro/steering/design-voice.md: every interactive element is keyboard reachable with a visible focus style and an accessible name; animations are disabled under prefers-reduced-motion; text colours meet 4.5:1 contrast; and every spooky effect encodes data listed in the visual encoding table of .kiro/specs/graveyard-ui/design.md. List problems with line numbers and fix them."
+  }
+}

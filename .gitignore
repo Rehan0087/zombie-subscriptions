@@ -1,0 +1,8 @@
+node_modules/
+dist/
+coverage/
+.DS_Store
+*.local
+# Never commit real bank statements
+*.statement.csv
+# Do NOT ignore .kiro/ — it is required for the Kiroween submission.

@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Check sample graveyard still demos everything",
+  "description": "When detection rules or the sample statement change, confirm the sample still shows every feature judges should see.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["src/core/detect.ts", "src/core/normalize.ts", "src/sample/**"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Run analyzeStatement on src/sample/haunted-statement.csv (write a quick Vitest test if one doesn't exist) and confirm the result still contains: at least 8 active zombies, one price hike, one yearly zombie, two plans on one merchant split into two zombies, one dormant series, at least one 'maybe' zombie, and no credits. Report anything missing."
+  }
+}

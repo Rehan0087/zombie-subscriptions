@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Run core tests on save",
+  "description": "When a file in the detection engine changes, run its unit and property tests and fix any failure before moving on.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["src/core/**/*.ts"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A file in src/core changed. Run `npm test -- --run src/core`. If a fast-check property fails, read the shrunk counterexample, fix the code (not the property) unless the property contradicts .kiro/specs/zombie-detection/design.md, and add the counterexample as a plain unit test. Report which properties passed."
+  }
+}

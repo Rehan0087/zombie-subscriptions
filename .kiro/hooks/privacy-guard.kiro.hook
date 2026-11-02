@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Privacy guard",
+  "description": "Blocks any change that would let bank data or usage leave the browser.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["src/**/*.ts", "src/**/*.tsx", "index.html", "package.json"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Check the changed file against .kiro/steering/privacy.md. Flag and remove any fetch, XMLHttpRequest, WebSocket, sendBeacon, analytics or error-reporting SDK, remote font or script URL, or console logging of transaction descriptions or amounts. If package.json changed, check new dependencies for telemetry. Reply 'Privacy OK' if nothing was found."
+  }
+}

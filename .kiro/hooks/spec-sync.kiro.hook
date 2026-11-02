@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Keep spec and code in sync",
+  "description": "After engine or UI code changes, check the change against the spec and tick off finished tasks.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["src/core/**/*.ts", "src/state/**/*.ts", "src/ui/**/*.tsx"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Compare the change with the matching spec in .kiro/specs (zombie-detection for src/core and src/state, graveyard-ui for src/ui). If the code now satisfies a task, mark it [x] in tasks.md. If the code does something the requirements don't describe or contradicts them, stop and tell me which requirement number is affected instead of silently changing the spec."
+  }
+}
