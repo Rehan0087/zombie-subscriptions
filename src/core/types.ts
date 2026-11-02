@@ -45,4 +45,6 @@ export interface Zombie {
 export interface Verdict {
   kind: "kill" | "spare";
   at: IsoDate;
+  /** Yearly cost when the verdict was given, so savings survive the series going quiet. */
+  yearlyCost: Minor;
 }

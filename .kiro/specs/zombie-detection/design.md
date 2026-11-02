@@ -49,7 +49,7 @@ interface Zombie {
   confidence: number;               // 0..1
 }
 
-type Verdict = { kind: "kill" | "spare"; at: IsoDate };
+type Verdict = { kind: "kill" | "spare"; at: IsoDate; yearlyCost: Minor }; // cost captured at verdict time
 ```
 
 ## Column mapping (`csv.ts`)
@@ -65,12 +65,15 @@ Ordered list of regex rules applied to a lowercased string, then whitespace coll
 1. Keep debits only (`amount < 0`).
 2. Group by merchant key; sort each group by date, then by id for a stable tiebreak (needed for P1).
 3. **Split interleaved plans:** cluster amounts with a simple 1-D gap rule (sort distinct absolute amounts; start a new cluster when the next is > 40% above the previous). Clusters with fewer than 2 charges are dropped.
-4. **Cadence:** compute day gaps; take the median; pick the cadence window containing it. Check the 75% rule and the minimum count.
+4. **Cadence:** compute day gaps; take the median; pick the cadence window containing it. Check the minimum count and the 75% on-schedule rule (a gap in the window, or a two-gap span in 2× the window after a late charge).
+   - Groups are classified whole first; only if that fails are they split into price clusters. This keeps a price hike as one series while still separating interleaved plans.
 5. **Amount stability:** pass if all within ±25% of the median, otherwise find the single best split point where both sides are stable → that's a price change.
 6. **Confidence:** `0.4 * countScore + 0.4 * regularityScore + 0.2 * stabilityScore`, each 0..1:
-   - `countScore = min(1, charges / 6)` (yearly: `min(1, charges / 3)`)
-   - `regularityScore = fraction of gaps inside the window`
-   - `stabilityScore = 1 - (MAD of amounts / median amount)`, clamped
+   - `countScore = min(1, (charges - minCharges + 1) / 4)`
+   - `regularityScore = (onScheduleShare - 0.75) / 0.25`, so a series at the 75% limit scores 0
+   - `stabilityScore = 1 - (mean absolute deviation / median amount)`, after removing a detected price change, clamped
+   - _(Changed during build: the first formula could never drop below 0.75 for a valid series, so "Maybe zombies" could never appear.)_
+   - **Price change** is reported when one split leaves both sides within ±25%, prices differ by ≥5%, and the split removes at least half the spread. Plain ±10% noise is not a price change.
 7. **Dormant:** `referenceDate - lastCharge > 1.5 × nominal cadence days` (7, 30.44, 91.31, 365.25).
 
 ## Money (`money.ts`)
@@ -79,7 +82,8 @@ Ordered list of regex rules applied to a lowercased string, then whitespace coll
 
 ## Verdicts (`src/state/verdicts.ts`)
 - `Map<string /* merchantKey|cadence */, Verdict>` persisted to localStorage as JSON with a schema version.
-- `applyVerdicts(zombies, verdicts)` returns `{ feeding, killed, spared, resurrected, soulsSaved, stillFeeding }`.
+- Keyed by zombie id (`merchantKey|cadence|planIndex`).
+- `applyVerdicts(detection, verdicts)` returns `{ feeding, maybe, dormant, killed, resurrected, spared, soulsSaved, stillFeeding }`. `stillFeeding` counts feeding and resurrected zombies only.
 - Resurrected = verdict is `kill` and the zombie has a charge dated after `verdict.at`.
 
 ## Correctness properties (for property-based tests)
@@ -100,6 +104,8 @@ Ordered list of regex rules applied to a lowercased string, then whitespace coll
 ## Design notes
 - Symmetric ±3 day jitter (the first draft of P4) produces weekly gaps of 1–13 days, which no real weekly subscription has and which the 6–8 day window rejects. Banks post late, never early, so generators use a one-sided posting delay instead.
 - Cadence numbers (windows, minimum charges, charges per year, nominal days) live only in `src/core/cadence.ts`.
+- Normalization strips punctuation with `[^\p{L}\p{M}\p{N}\s]`. The first version left out `\p{M}` and broke Bengali merchant names ("দারাজ" became "দ র জ"), because vowel signs are combining marks.
+- A late payment used to break two gaps (e.g. 45 then 16 days) and fail the 75% rule. The on-schedule rule in step 4 fixes this.
 
 ## Error handling
 - Parsing never throws for bad data; it returns `skipped` rows with reasons.
