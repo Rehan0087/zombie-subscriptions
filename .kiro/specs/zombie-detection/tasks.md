@@ -1,6 +1,6 @@
 # Implementation Plan: Zombie Detection Engine
 
-- [ ] 1. Project setup
+- [x] 1. Project setup
   - Create the Vite + React + TypeScript project in strict mode; add Vitest, fast-check, Papa Parse, ESLint.
   - Add `npm test`, `npm run lint`, `npm run build` scripts and a GitHub Actions workflow that runs them.
   - _Requirements: all_

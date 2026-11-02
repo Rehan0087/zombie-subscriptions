@@ -6,3 +6,4 @@ coverage/
 # Never commit real bank statements
 *.statement.csv
 # Do NOT ignore .kiro/ — it is required for the Kiroween submission.
+*.tsbuildinfo
