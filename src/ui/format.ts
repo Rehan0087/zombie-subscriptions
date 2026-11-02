@@ -23,7 +23,11 @@ export function formatMoney(minor: Minor, currency: string): string {
 const dayFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 const monthFormat = new Intl.DateTimeFormat("en-GB", { month: "long", year: "numeric", timeZone: "UTC" });
 
-export const formatDate = (d: IsoDate) => dayFormat.format(new Date(`${d}T00:00:00Z`));
+const shortMonthFormat = new Intl.DateTimeFormat("en-GB", { month: "short", year: "numeric", timeZone: "UTC" });
+
+export const formatDate = (d: IsoDate) => dayFormat.format(new Date(`${d}T00:00:00Z`)).replace("Sept", "Sep");
+/** "Sep 2025", for headstone dates. */
+export const formatShortMonth = (d: IsoDate) => shortMonthFormat.format(new Date(`${d}T00:00:00Z`)).replace("Sept", "Sep");
 export const formatMonth = (d: IsoDate) => monthFormat.format(new Date(`${d}T00:00:00Z`));
 
 export const CADENCE_WORDS: Record<Cadence, { adjective: string; per: string }> = {

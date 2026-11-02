@@ -1,14 +1,14 @@
 import type { CSSProperties } from "react";
 import type { Zombie } from "../../core";
-import { CADENCE_WORDS, formatMoney, plural } from "../format";
+import { CADENCE_WORDS, formatMoney, formatShortMonth, plural } from "../format";
 import { cracks, hasHike } from "./encoding";
 
-/** Crack paths, drawn in order: more months feeding, more cracks. */
+/** Hairline cracks near the stone's edges, drawn in order: more months feeding, more cracks. */
 const CRACKS = [
-  "M30 38 l8 14 l-5 10 l9 12",
-  "M168 60 l-10 12 l6 9 l-8 14",
-  "M14 128 l10 10 l-4 12 l12 14",
-  "M186 100 l-8 12 l6 10 l-6 16",
+  "M10 82 l7 11 l-3 9 l6 12",
+  "M190 104 l-6 10 l4 8 l-5 12",
+  "M7 168 l7 8 l-2 10 l6 12",
+  "M193 182 l-5 10 l4 9 l-4 13",
 ];
 
 interface Props {
@@ -18,43 +18,70 @@ interface Props {
   index: number;
   currency: string;
   resurrected?: boolean;
-  onOpen: () => void;
+  /** Without it the stone is a static illustration (the landing page hero). */
+  onOpen?: () => void;
 }
 
+/**
+ * A headstone inscribed like an epitaph. The dates stay open ("Sep 2025 —") because the
+ * subscription is still charging; burying it is what closes them.
+ */
 export function ZombieCard({ zombie, weight, months, index, currency, resurrected, onOpen }: Props) {
   const hike = hasHike(zombie);
   const yearly = formatMoney(zombie.yearlyCost, currency);
   const amount = formatMoney(zombie.currentAmount, currency);
   const words = CADENCE_WORDS[zombie.cadence];
   const label =
-    `${zombie.displayName}, ${amount} per ${words.per}, ${yearly} per year, feeding for ${plural(months, "month")}.` +
-    (hike ? " Price went up." : "") +
-    (resurrected ? " It came back after you killed it." : "") +
-    " Open to kill or spare.";
+    `${zombie.displayName}: ${amount} per ${words.per}, ${yearly} a year, charging for ${plural(months, "month")}.` +
+    (hike && zombie.priceChange ? ` Price rose from ${formatMoney(zombie.priceChange.from, currency)}.` : "") +
+    (resurrected ? " Charged again after you buried it." : "") +
+    " Open to bury or spare.";
 
+  const inscription = (
+    <>
+      {resurrected && <span className="tomb-back">Charged again</span>}
+      <span className="eyes" aria-hidden="true">
+        <i />
+        <i />
+      </span>
+      <svg className="cracks" viewBox="0 0 200 240" preserveAspectRatio="none" aria-hidden="true">
+        {CRACKS.slice(0, cracks(months)).map((d) => (
+          <path key={d} d={d} />
+        ))}
+      </svg>
+      <span className="epitaph-kicker carved" aria-hidden="true">
+        {resurrected ? "Risen again" : "Here lurks"}
+      </span>
+      <span className="tomb-name carved">{zombie.displayName}</span>
+      <span className="tomb-dates carved num">{formatShortMonth(zombie.firstCharge)} —</span>
+      <span className="tomb-rule" aria-hidden="true" />
+      <span className="tomb-yearly carved num">
+        {yearly}
+        <small>a year</small>
+      </span>
+      <span className="tomb-meta carved num">
+        {amount} {words.adjective.toLowerCase()} · {plural(months, "month")}
+      </span>
+      {hike && zombie.priceChange && (
+        <span className="tomb-hike num">
+          Rose {formatMoney(zombie.priceChange.from, currency)} → {formatMoney(zombie.priceChange.to, currency)}
+        </span>
+      )}
+    </>
+  );
+
+  const style = { "--weight": weight, "--i": index } as CSSProperties;
+  if (!onOpen) {
+    return (
+      <div className="headstone" data-hike={hike} style={style} role="img" aria-label={label}>
+        {inscription}
+      </div>
+    );
+  }
   return (
-    <li className="grave" style={{ "--weight": weight, "--i": index } as CSSProperties}>
-      <button type="button" className="zombie" data-hike={hike} aria-label={label} onClick={onOpen}>
-        {resurrected && <span className="badge badge-back">It came back!</span>}
-        <span className="eyes" aria-hidden="true">
-          <i />
-          <i />
-        </span>
-        <svg className="cracks" viewBox="0 0 200 200" preserveAspectRatio="none" aria-hidden="true">
-          {CRACKS.slice(0, cracks(months)).map((d) => (
-            <path key={d} d={d} />
-          ))}
-        </svg>
-        <span className="tomb-name">{zombie.displayName}</span>
-        <span className="tomb-yearly num">
-          {yearly}
-          <span className="visually-hidden"> per year</span>
-          <span aria-hidden="true">/yr</span>
-        </span>
-        <span className="tomb-meta num">
-          {amount} {words.adjective.toLowerCase()} · {plural(months, "month")}
-        </span>
-        {hike && <span className="badge badge-hike">Grew stronger</span>}
+    <li className="plot" style={style}>
+      <button type="button" className="headstone" data-hike={hike} aria-label={label} onClick={onOpen}>
+        {inscription}
       </button>
     </li>
   );

@@ -37,7 +37,7 @@ node scripts/make-sample.mjs
 - Detection of weekly, monthly, quarterly and yearly charges that tolerates late payments, price changes and two plans on one service.
 - Yearly cost, total paid, price hike alerts and dormant-series detection, each with "how we computed this".
 - Kill / spare / undo, savings tally, and verdicts that carry over to next month's statement. Killed subscriptions that charge again come back with a warning.
-- Spooky design that encodes data: tombstone size and glow = yearly cost, grave cracks = months charging, red eyes = price hike, ghosts = spared, R.I.P. stones = killed.
+- A "moonlit cemetery stationery" design: each subscription is a pale headstone inscribed like an epitaph ("Here lurks · Grimflix · Sep 2025 —"). The dates stay open while it charges and close when you bury it. Stone size and glow = yearly cost, cracks = months charging, red eyes = price rise, ghosts = spared.
 - Export a "cancel these" checklist as CSV.
 - Strict privacy: no backend, and the production build ships a Content-Security-Policy with `connect-src 'none'`, so the page cannot send your data anywhere.
 - Reduced-motion support, keyboard access, WCAG AA contrast, and sound that is off by default and synthesized in the browser.

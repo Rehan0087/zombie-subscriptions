@@ -147,35 +147,42 @@ export function App() {
     dispatch({
       type: "verdict",
       verdicts: kill(verdicts, z, todayIso()),
-      toast: { message: `Buried ${z.displayName}. ${formatMoney(z.yearlyCost, currency)} a year saved, once you cancel it.`, tips: true },
+      toast: { message: `Buried ${z.displayName}. Cancel it to save ${formatMoney(z.yearlyCost, currency)} a year.`, tips: true },
     });
   }
 
   function spareZombie(z: Zombie) {
     play("wind", settings.sound);
-    dispatch({ type: "verdict", verdicts: spare(verdicts, z, todayIso()), toast: { message: `Spared ${z.displayName}. It's a friendly ghost now.`, tips: false } });
+    dispatch({ type: "verdict", verdicts: spare(verdicts, z, todayIso()), toast: { message: `Spared ${z.displayName}. It's out of the total.`, tips: false } });
   }
 
   function revive(z: Zombie) {
     const next = { ...verdicts };
     delete next[z.id];
-    dispatch({ type: "verdict", verdicts: next, toast: { message: `${z.displayName} is back in the graveyard.`, tips: false } });
+    dispatch({ type: "verdict", verdicts: next, toast: { message: `${z.displayName} is back with the undecided.`, tips: false } });
   }
 
   const needs = analysis?.import.needs ?? [];
 
   return (
     <>
-      <Atmosphere />
+      <Atmosphere variant={current && graveyard ? "graveyard" : "landing"} />
       <div className="app">
         {!current || !analysis || !graveyard ? (
-          <Landing onFile={(name, text) => dispatch({ type: "open", statement: { name, text } })} onSample={() => dispatch({ type: "open", statement: { name: "Sample graveyard", text: sampleCsv } })} />
+          <Landing
+            sampleCsv={sampleCsv}
+            currency={currency}
+            onFile={(name, text) => dispatch({ type: "open", statement: { name, text } })}
+            onSample={() => dispatch({ type: "open", statement: { name: "Sample graveyard", text: sampleCsv } })}
+          />
         ) : (
           <>
             <header className="topbar">
-              <p className="brand">Zombie Subscriptions</p>
+              <p className="wordmark">
+                Zombie <b>Subscriptions</b>
+              </p>
               <button type="button" className="btn btn-small" onClick={() => dispatch({ type: "close" })}>
-                Load another statement
+                Open another statement
               </button>
             </header>
             {needs.length === 0 && (
@@ -190,7 +197,7 @@ export function App() {
                 onOpen={open}
               />
             )}
-            <footer className="footer">
+            <footer className="settings">
               <label>
                 Currency
                 <select value={currency} onChange={(e) => dispatch({ type: "settings", settings: { currency: e.target.value } })}>
@@ -208,8 +215,9 @@ export function App() {
                 Remember this statement on this device
               </label>
               <button type="button" className="btn btn-small" onClick={() => downloadText("cancel-these.csv", checklistCsv(graveyard, verdicts))} disabled={graveyard.killed.length + graveyard.spared.length + graveyard.resurrected.length === 0}>
-                Export checklist
+                Export checklist (CSV)
               </button>
+              <span className="spacer" />
               {(Object.keys(overrides.merges).length > 0 || overrides.splitByAmount.length > 0) && (
                 <button type="button" className="btn btn-small" onClick={() => dispatch({ type: "resetGrouping" })}>
                   Reset grouping
@@ -217,7 +225,7 @@ export function App() {
               )}
               <button
                 type="button"
-                className="btn btn-small btn-ghost"
+                className="btn btn-small btn-quiet"
                 onClick={() => {
                   if (window.confirm("Forget everything? This clears your verdicts, settings and any remembered statement from this device.")) {
                     forget();
@@ -273,9 +281,9 @@ export function App() {
           </div>
           {state.toast.tips && (
             <ul className="tips">
-              <li>Bought in an app? Cancel in your phone's app store subscriptions page.</li>
-              <li>Otherwise, look for "Cancel" or "Membership" in the service's account settings.</li>
-              <li>Still charging? Ask your bank or wallet to stop the recurring payment.</li>
+              <li>Paid through an app store: cancel in your phone's subscriptions settings.</li>
+              <li>Paid on the service's website: look for Membership or Billing in your account.</li>
+              <li>Still charged after cancelling: ask your bank or wallet to stop the recurring payment.</li>
             </ul>
           )}
         </div>

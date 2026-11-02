@@ -23,7 +23,7 @@ interface Props {
   onClose: () => void;
 }
 
-/** Everything about one zombie, and the verdict buttons (graveyard-ui requirement 4). */
+/** Everything about one subscription, and the verdict buttons (graveyard-ui requirement 4). */
 export function ZombieSheet(props: Props) {
   const { zombie: z, status, verdict, currency, referenceDate } = props;
   const ref = useRef<HTMLDialogElement>(null);
@@ -39,37 +39,37 @@ export function ZombieSheet(props: Props) {
     if (dialog && !dialog.open) dialog.showModal();
   }, []);
 
-  const lede = z.dormant
+  const story = z.dormant
     ? `This one went quiet. No charge since ${formatDate(z.lastCharge)}.`
-    : `This one's been feeding for ${plural(months, "month")}. ${money(z.totalPaid)} so far.`;
+    : `This one has been feeding for ${plural(months, "month")}. ${money(z.totalPaid)} so far.`;
 
   return (
     <dialog ref={ref} className="sheet" aria-labelledby="sheet-title" onCancel={props.onClose} onClose={props.onClose}>
       <div className="dialog-body">
-        <button type="button" className="btn btn-ghost btn-small sheet-close" onClick={props.onClose}>
-          Close
-        </button>
-        <div>
-          <h2 id="sheet-title" className="brand" style={{ fontSize: "2rem" }}>
-            {z.displayName}
-          </h2>
-          <p className="hint">
-            {words.adjective} · {plural(z.charges.length, "charge")}
-            {status === "maybe" && " · Maybe a zombie: the charges are a little irregular"}
-          </p>
+        <div className="sheet-head">
+          <div>
+            <h2 id="sheet-title">{z.displayName}</h2>
+            <p className="sheet-sub">
+              {words.adjective} · {plural(z.charges.length, "charge")}
+              {status === "maybe" && " · irregular, may not be a subscription"}
+            </p>
+          </div>
+          <button type="button" className="btn btn-quiet btn-small" onClick={props.onClose}>
+            Close
+          </button>
         </div>
 
         {status === "resurrected" && verdict && (
-          <p className="warn" role="status">
-            It came back! You killed this on {formatDate(verdict.at)}, but it charged you again on {formatDate(z.lastCharge)}.
-            Check that the cancellation went through.
+          <p className="note note-warn" role="status">
+            You buried this on {formatDate(verdict.at)}, but it charged you again on {formatDate(z.lastCharge)}. Check that the
+            cancellation went through.
           </p>
         )}
 
-        <p className="lede">{lede}</p>
+        <p className="story">{story}</p>
         {hike && z.priceChange && (
-          <p className="warn">
-            It grew stronger: {money(z.priceChange.from)} → {money(z.priceChange.to)} in {formatMonth(z.priceChange.on)}.
+          <p className="note note-warn num">
+            The price rose from {money(z.priceChange.from)} to {money(z.priceChange.to)} in {formatMonth(z.priceChange.on)}.
           </p>
         )}
 
@@ -78,7 +78,7 @@ export function ZombieSheet(props: Props) {
         <dl className="facts num">
           <dt>Current charge</dt>
           <dd>
-            {money(z.currentAmount)} per {words.per}
+            {money(z.currentAmount)} / {words.per}
           </dd>
           <dt>First charge</dt>
           <dd>{formatDate(z.firstCharge)}</dd>
@@ -89,38 +89,39 @@ export function ZombieSheet(props: Props) {
           <dt>Yearly cost</dt>
           <dd>{money(z.yearlyCost)}</dd>
         </dl>
-        <p className="math num">
+        <p className="note note-math num">
           {breakdown.dormant
             ? `No charge within 1.5 ${words.per}s of ${formatDate(referenceDate)}, so it counts as ${money(0)} a year.`
-            : `${money(breakdown.amount)} × ${breakdown.perYear} charges/yr = ${money(breakdown.yearly)}`}
+            : `${money(breakdown.amount)} × ${breakdown.perYear} charges a year = ${money(breakdown.yearly)}`}
         </p>
 
-        <div className="dialog-actions" style={{ justifyContent: "flex-start" }}>
-          {status === "killed" || status === "spared" ? (
-            <button type="button" className="btn" onClick={props.onRevive}>
-              {status === "killed" ? "Dig it back up" : "Stop sparing it"}
+        {status === "killed" || status === "spared" ? (
+          <button type="button" className="btn" onClick={props.onRevive}>
+            {status === "killed" ? "Dig it back up" : "Stop sparing it"}
+          </button>
+        ) : (
+          <div className="verdict-actions">
+            <button type="button" className="btn btn-bury" onClick={props.onKill}>
+              {status === "resurrected" ? "Bury it again" : "Bury it"}
             </button>
-          ) : (
-            <>
-              <button type="button" className="btn btn-kill" onClick={props.onKill}>
-                {status === "resurrected" ? "Kill it again" : "Kill it — I'm cancelling"}
-              </button>
-              <button type="button" className="btn" onClick={props.onSpare}>
-                Spare it — I still use it
-              </button>
-            </>
-          )}
-        </div>
+            <button type="button" className="btn btn-stone" onClick={props.onSpare}>
+              Spare it
+            </button>
+            <p className="hint" style={{ gridColumn: "1 / -1" }}>
+              Bury it if you're cancelling. Spare it if you still use it.
+            </p>
+          </div>
+        )}
 
-        <details>
-          <summary>Wrong grouping?</summary>
-          <div className="dialog-body" style={{ padding: "12px 0 0" }}>
+        <details className="regroup">
+          <summary>Grouped wrongly?</summary>
+          <div className="dialog-body" style={{ padding: "14px 0 0" }}>
             {props.mergeTargets.length > 0 && (
               <div className="field-row">
-                <label htmlFor="merge">These charges are the same subscription as…</label>
+                <label htmlFor="merge">These charges belong with…</label>
                 <div style={{ display: "flex", gap: 8 }}>
                   <select id="merge" value={mergeInto} onChange={(e) => setMergeInto(e.target.value)}>
-                    <option value="">Choose…</option>
+                    <option value="">Choose a subscription</option>
                     {props.mergeTargets.map((t) => (
                       <option key={t.key} value={t.key}>
                         {t.name}
@@ -134,7 +135,7 @@ export function ZombieSheet(props: Props) {
               </div>
             )}
             <button type="button" className="btn btn-small" onClick={props.onToggleSplit}>
-              {props.isSplit ? "Treat as one plan again" : "These are different plans: split by price"}
+              {props.isSplit ? "Treat as one plan again" : "Split into separate plans by price"}
             </button>
           </div>
         </details>

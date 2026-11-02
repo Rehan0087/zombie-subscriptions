@@ -68,11 +68,11 @@ export function MappingDialog({ text, result, onSubmit, onCancel }: Props) {
   return (
     <dialog ref={ref} aria-labelledby="map-title" onCancel={onCancel}>
       <form className="dialog-body" onSubmit={submit}>
-        <h2 id="map-title">Help us read this statement</h2>
+        <h2 id="map-title">Match your columns</h2>
         <p className="hint">
           {needsOrder && result.needs.length === 1
             ? "Every date in this file could be read two ways. Which order does your bank use?"
-            : "We couldn't find every column we need. Pick them below. We'll remember your choice for this bank."}
+            : "Some columns weren't recognised. Pick them below. Your choice is remembered for statements with the same columns."}
         </p>
 
         {select("date", "Date column")}
@@ -116,11 +116,11 @@ export function MappingDialog({ text, result, onSubmit, onCancel }: Props) {
         )}
 
         <div className="dialog-actions">
-          <button type="button" className="btn btn-ghost" onClick={onCancel}>
+          <button type="button" className="btn btn-quiet" onClick={onCancel}>
             Cancel
           </button>
-          <button type="submit" className="btn btn-primary" disabled={!mapping.date || !mapping.description || missingAmount}>
-            Summon the zombies
+          <button type="submit" className="btn btn-stone" disabled={!mapping.date || !mapping.description || missingAmount}>
+            Read statement
           </button>
         </div>
       </form>
