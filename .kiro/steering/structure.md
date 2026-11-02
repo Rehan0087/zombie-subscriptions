@@ -12,6 +12,7 @@ src/
     normalize.ts     Merchant name normalization
     detect.ts        Recurring-charge detection
     money.ts         Minor-unit helpers, yearly cost
+    cadence.ts       Cadence windows, minimum charges, charges per year
     dates.ts         ISO date <-> day number helpers
     *.test.ts        Unit tests next to the code
     *.property.test.ts  fast-check property tests

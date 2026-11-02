@@ -88,7 +88,7 @@ Ordered list of regex rules applied to a lowercased string, then whitespace coll
 | P1 | Shuffling the input rows produces exactly the same zombies (same ids, same fields). | 3.7 |
 | P2 | `normalize(normalize(s)) === normalize(s)` for any string. | 2.2 |
 | P3 | Adding card suffixes, store numbers or payment prefixes to a description does not change its merchant key. | 2.1 |
-| P4 | A generated series with a known cadence, ±3 day jitter (±10 for yearly) and ±10% amount noise is detected with that cadence. | 3.2–3.5 |
+| P4 | A generated series with a known cadence is detected with that cadence. Series model real billing: fixed schedule (monthly on the same day of month, clamped to month length), posted 0–2 days late (0–1 weekly, 0–3 yearly), ±10% amount noise, optional single 10–50% price hike. | 3.2–3.5 |
 | P5 | Credits never appear in any zombie's charges. | 3.1 |
 | P6 | A merchant with fewer than the minimum number of charges is never a zombie. | 3.3 |
 | P7 | `yearlyCost === abs(currentAmount) × perYear[cadence]` for active zombies and `0` for dormant ones; always an integer. | 4.2, 4.4 |
@@ -96,6 +96,10 @@ Ordered list of regex rules applied to a lowercased string, then whitespace coll
 | P9 | Undoing the last verdict restores the previous view model exactly. | 5.3 |
 | P10 | Serializing transactions to CSV in any supported layout and parsing it back yields the same transactions. | 1.2–1.6 |
 | P11 | Two interleaved series whose amounts differ by more than 2× are reported as two zombies. | 3.6 |
+
+## Design notes
+- Symmetric ±3 day jitter (the first draft of P4) produces weekly gaps of 1–13 days, which no real weekly subscription has and which the 6–8 day window rejects. Banks post late, never early, so generators use a one-sided posting delay instead.
+- Cadence numbers (windows, minimum charges, charges per year, nominal days) live only in `src/core/cadence.ts`.
 
 ## Error handling
 - Parsing never throws for bad data; it returns `skipped` rows with reasons.

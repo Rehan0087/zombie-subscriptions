@@ -5,10 +5,10 @@
   - Add `npm test`, `npm run lint`, `npm run build` scripts and a GitHub Actions workflow that runs them.
   - _Requirements: all_
 
-- [ ] 2. Core types and helpers
-  - [ ] 2.1 Write `types.ts` with the data model from the design.
-  - [ ] 2.2 Write `dates.ts` (ISO ↔ day number, add days) and `money.ts` (`assertMinor`, `yearlyCost`, `perYear`).
-  - [ ] 2.3 Write `test-arbitraries.ts`: transaction, noisy merchant name, recurring series and statement generators.
+- [x] 2. Core types and helpers
+  - [x] 2.1 Write `types.ts` with the data model from the design.
+  - [x] 2.2 Write `dates.ts` (ISO ↔ day number, add days) and `money.ts` (`assertMinor`, `yearlyCost`, `perYear`), with cadence rules in `cadence.ts`.
+  - [x] 2.3 Write `test-arbitraries.ts`: transaction, noisy merchant name, recurring series and statement generators.
   - _Requirements: 4.2_
 
 - [ ] 3. CSV import
